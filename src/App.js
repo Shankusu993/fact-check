@@ -9,6 +9,8 @@ function App() {
   const [Links, setLinks] = useState([])
   const [Titles, setTitles] = useState([])
 
+  const [ gResults, setgResults ] = useState([]);
+
   const handleImageUpload = event => {
     console.log('event is ',event)
     console.log(event)
@@ -50,7 +52,6 @@ fetch("https://api.imgur.com/3/image", requestOptions)
  .then(res => {
           console.log('1111')
             let html_data = res.data;
-            console.log(html_data)
             const parser = new DOMParser();
             const doc = parser.parseFromString(html_data, "text/html");
             const l = doc.getElementsByClassName('CbirSites-Items');
@@ -61,15 +62,62 @@ fetch("https://api.imgur.com/3/image", requestOptions)
           console.log('2222')
             setLinks(links)
             setTitles(titles)
-            console.log(links)
-            console.log(titles)
+            // console.log(links)
+            // console.log(titles)
           })
           .catch(err => {
               console.log('err is ',err)
           })
 
+          axios
+          .get(`https://www.google.com/searchbyimage?image_url=${res.data.link}`)
+          .then(res => {
+            // console.log('google is ',res.data)
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(res.data, "text/html");
+            let links = doc.getElementsByTagName('a');
+            links = [...links];
+
+            // console.log(links)
+
+            let g_titles = [];
+            let g_links = [];
+            links.forEach((element,index) => {
+              // console.log(index,element)
+              // let g_t =  element.getElementsByTagName('h3');
+              // console.log('element ',index, element)
+              // let g_t = element.getElementsByTagName('h3')
+              let g_t = element.querySelectorAll('[role="link"]')
+
+              
+              if (g_t.length != 0) {
+                let g_t_arr = [...g_t];
+                g_titles.push(g_t_arr[0].text)
+
+
+                g_links.push(element.href);
+              }
+            });
+
+            console.log('GOOGLE ________________________________________________')
+            console.log(g_links)
+            console.log(g_titles)
+
+            setgResults(g_links)
+            
+          })
+          .catch(err => {
+            console.log('err in google ',err)
+          })
+
 } )
 .catch(error => console.log('error', error));
+
+
+
+
+
 
 
 // axios({
@@ -138,11 +186,20 @@ fetch("https://api.imgur.com/3/image", requestOptions)
 
                     <h1>test</h1>
                     {/* <input type="file" id="fileUpload" onChange="handleImageUpload(event)"/> */}
+         
                     <input type="file" id="fileUpload" onChange={(e) => handleImageUpload(e)}/>
+<h1>Yandex</h1>
 
     <ul>
       {Titles.map((element, index) => {
         return (<li><a href={Links[index]}>{element}</a></li>)
+      })}
+  </ul>
+
+<h1>Google</h1>
+  <ul>
+      {gResults.map((element, index) => {
+        return (<li><a href={element}>{element}</a></li>)
       })}
   </ul>
 
