@@ -84,7 +84,7 @@ fetch("https://api.imgur.com/3/image", requestOptions)
             let g_titles = [];
             let g_links = [];
             links.forEach((element,index) => {
-              // console.log(index,element)
+              console.log(index,element)
               // let g_t =  element.getElementsByTagName('h3');
               // console.log('element ',index, element)
               // let g_t = element.getElementsByTagName('h3')
